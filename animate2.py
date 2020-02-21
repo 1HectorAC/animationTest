@@ -64,74 +64,79 @@ class Sphere:
     def FrameLimitCheck(self):
         if self.FrameIndex > Sphere.maxFrames:
             print("Warning. Excceding frame limit")
+
+def main():     
+    #--------------------------------------------------main----------------------------------------------
+    #read base.pov file into sdl
+    fin = open('base.pov') 
+    sdl = fin.read() 
+    fin.close() 
+
+    #-----Requirement 4----- Sphere objects was created using the Sphere class. It is also a key feature in the program since most of the program involves using it.
+    Sp1 = Sphere(animateHelp.color[0] ,0,-.75,-2,.25)
+    Sp2 = Sphere(animateHelp.color[1],0,0,-2,.25)
+    Sp3 = Sphere(animateHelp.color[2],0,.75,-2,.25)
+
+    #add cicle objects to base.pov file
+    sdl = sdl +"\n"+ Sp1.animateFrame[0] +"\n"+ Sp2.animateFrame[0] +"\n"+ Sp3.animateFrame[0]
+
+    #setup frames for circle objects
+    Sp1.circleAround(90)
+    Sp2.expandThenContrast(44)
+    Sp2.expandThenContrast(46)
+    Sp3.circleAround(90)
+
+    Sp1.expandThenContrast(44)
+    Sp1.expandThenContrast(46)
+    Sp2.circleAround(90)
+    Sp3.expandThenContrast(44)
+    Sp3.expandThenContrast(46)
+
+    Sp1.stillFrame(10)
+    Sp2.stillFrame(10)
+    Sp3.stillFrame(10)
+
+    Sp1.circleAround(90)
+    Sp2.stillFrame(15)
+    Sp3.stillFrame(15)
+
+    Sp1.stillFrame(15)
+    Sp2.circleAround(90)
+    Sp3.stillFrame(15)
+
+    Sp1.stillFrame(15)
+    Sp2.stillFrame(15)
+    Sp3.circleAround(90)
+
+    Sp1.expand(25)
+    Sp2.expand(25)
+    Sp3.expand(25)
+
+    #animation sequence to make pngs with cicle objects
+    for i in range(335):
+        #-----Requirement 2----- sdl is the read in file. The next part then checks sdl for the circle object frame with "search" and then replaces it in sdl.
+        #-------Requirement 6-------- Here is the use of a dictionary
+        check = {"one":re.search(Sp1.animateFrame[i],sdl) ,"two":re.search(Sp2.animateFrame[i],sdl) ,"three":re.search(Sp3.animateFrame[i],sdl)}
+
+        #error check in case can't replace circle object in sdl
+        if check["one"] and check["two"] and check["three"]:
+            #replace old string with new in sdl
+            sdl = re.sub(Sp1.animateFrame[i], Sp1.animateFrame[i+1],sdl)
+            sdl = re.sub(Sp2.animateFrame[i], Sp2.animateFrame[i+1],sdl)
+            sdl = re.sub(Sp3.animateFrame[i], Sp3.animateFrame[i+1],sdl)
             
-#--------------------------------------------------main----------------------------------------------
-#read base.pov file into sdl
-fin = open('base.pov') 
-sdl = fin.read() 
-fin.close() 
+            #write new sdl to temp.pov
+            animateHelp.addToTemp(sdl)
+            
+            #make png from tmp.pov file
+            animateHelp.makePNG(i)
+        else:
+            print("-----------Error(cant add next animation Frame)-------------")
 
-#-----Requirement 4----- Sphere objects was created using the Sphere class. It is also a key feature in the program since most of the program involves using it.
-Sp1 = Sphere(animateHelp.color[0] ,0,-.75,-2,.25)
-Sp2 = Sphere(animateHelp.color[1],0,0,-2,.25)
-Sp3 = Sphere(animateHelp.color[2],0,.75,-2,.25)
+    #encode
+    print ('Encoding movie')
+    os.system('mencoder.exe mf://tempx*.png -mf type=png:fps=25 -ovc lavc -lavcopts vcodec=msmpeg4:vbitrate=2160000:keyint=5:vhq -o movie2.avi ' )
+    animateHelp.clearTempFiles()
 
-#add cicle objects to base.pov file
-sdl = sdl +"\n"+ Sp1.animateFrame[0] +"\n"+ Sp2.animateFrame[0] +"\n"+ Sp3.animateFrame[0]
-
-#setup frames for circle objects
-Sp1.circleAround(90)
-Sp2.expandThenContrast(44)
-Sp2.expandThenContrast(46)
-Sp3.circleAround(90)
-
-Sp1.expandThenContrast(44)
-Sp1.expandThenContrast(46)
-Sp2.circleAround(90)
-Sp3.expandThenContrast(44)
-Sp3.expandThenContrast(46)
-
-Sp1.stillFrame(10)
-Sp2.stillFrame(10)
-Sp3.stillFrame(10)
-
-Sp1.circleAround(90)
-Sp2.stillFrame(15)
-Sp3.stillFrame(15)
-
-Sp1.stillFrame(15)
-Sp2.circleAround(90)
-Sp3.stillFrame(15)
-
-Sp1.stillFrame(15)
-Sp2.stillFrame(15)
-Sp3.circleAround(90)
-
-Sp1.expand(25)
-Sp2.expand(25)
-Sp3.expand(25)
-
-#animation sequence to make pngs with cicle objects
-for i in range(335):
-    #-----Requirement 2----- sdl is the read in file. The next part then checks sdl for the circle object frame with "search" and then replaces it in sdl.
-    #-------Requirement 6-------- Here is the use of a dictionary
-    check = {"one":re.search(Sp1.animateFrame[i],sdl) ,"two":re.search(Sp2.animateFrame[i],sdl) ,"three":re.search(Sp3.animateFrame[i],sdl)}
-
-    #error check in case can't replace circle object in sdl
-    if check["one"] and check["two"] and check["three"]:
-        #replace old string with new in sdl
-        sdl = re.sub(Sp1.animateFrame[i], Sp1.animateFrame[i+1],sdl)
-        sdl = re.sub(Sp2.animateFrame[i], Sp2.animateFrame[i+1],sdl)
-        sdl = re.sub(Sp3.animateFrame[i], Sp3.animateFrame[i+1],sdl)
-        
-        #write new sdl to temp.pov
-        animateHelp.addToTemp(sdl);
-        
-        #make png from tmp.pov file
-        animateHelp.makePNG(i)
-    else:
-        print("-----------Error(cant add next animation Frame)-------------")
-
-#encode
-print ('Encoding movie')
-os.system('mencoder.exe mf://temp*.png -mf type=png:fps=25 -ovc lavc -lavcopts vcodec=msmpeg4:vbitrate=2160000:keyint=5:vhq -o movie2.avi ' )
+if __name__ == '__main__':
+    main()

@@ -1,7 +1,8 @@
 import math
 import os
+import glob
 #-------Requirement 3-------- This is a module. It has variables like "color" and functions like "cosHelp" that are at module scope
-outfile = 'temp.pov'
+outfile = 'tempx.pov'
 #-------Requirement 6-------- Here is the use of a tuple
 color = ("Yellow","Blue","Red")
 
@@ -24,7 +25,7 @@ def vectorBuilder(x,y,z):
 #build a png
 def makePNG(num):
     pov_cmd = 'pvengine.exe +I%s +O%s -D -V +A +H600 +W800 /exit'
-    cmd = pov_cmd % ('temp.pov', "temp" + str(num).zfill(4) + ".png")
+    cmd = pov_cmd % ('tempx.pov', "tempx" + str(num).zfill(4) + ".png")
     os.system(cmd)
     
 #writes over temp.pov file
@@ -32,4 +33,12 @@ def addToTemp(sdl):
     fout = open( outfile, 'w' ) 
     fout.write( sdl ) 
     fout.close()
-        
+
+#clears all tempx* files in current directory
+def clearTempFiles():
+    tempList = glob.glob('tempx*')
+    for tempFile in tempList:
+        try:
+            os.remove(tempFile)
+        except:
+            print("Error while deleting file: ", tempFile)
